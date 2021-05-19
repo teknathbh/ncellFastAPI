@@ -23,8 +23,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 text = websocket.receive_text()
                 if text == "exit":
                     raise MyException('Connection exit')
-                else:
-                    return text
+                return text
 
             def register_number(number: str):
                 global reg
@@ -67,7 +66,7 @@ async def websocket_endpoint(websocket: WebSocket):
                         if text not in possible_paylods:
                             raise MyException(
                                 'Please send a valid response. Start OVER!')
-                        elif text == "view_balance":
+                        if text == "view_balance":
                             balance = account.viewBalance()
                             await websocket.send_json(balance.content)
                             await after_login()
