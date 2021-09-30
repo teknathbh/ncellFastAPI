@@ -9,7 +9,7 @@ class MyException(Exception):
 
 
 # Create application
-app = FastAPI(title='Awebisam NcellApp FastAPI')
+app = FastAPI(title='NcellApp FastAPI')
 
 
 @app.websocket("/ws")
@@ -18,16 +18,19 @@ async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     while True:
         try:
+
             def recieve_text():
                 text = websocket.receive_text()
                 if text == "exit":
                     raise MyException('Connection exit')
                 return text
+
             def register_number(number: str):
                 global reg
                 reg = register(number)
                 otps = reg.sendOtp()
                 return int(otps.opStatus)
+
             await websocket.send_text("Please send your 10 digits phone number as paylod and wait for response. Send exit anytime to quit.")
             number = await recieve_text()
             reg_num = register_number(number)
@@ -39,6 +42,7 @@ async def websocket_endpoint(websocket: WebSocket):
                     token = tk.content['token']
                     account = ncell(token=token)
                     account.login()
+
                     async def send_sms(free=False):
                         await websocket.send_text('Send the reciever phone')
                         number = int(await recieve_text())
@@ -51,7 +55,7 @@ async def websocket_endpoint(websocket: WebSocket):
                                 account.sendSms(number, msg)
                             await websocket.send_text('Sent Message Successfully')
                         except:
-                            raise MyException('Invalid Response, please try again')
+                            raise MyException('Invalid Response. Please start over')
 
                     async def after_login():
                         print('After Login')
@@ -61,7 +65,7 @@ async def websocket_endpoint(websocket: WebSocket):
                         text = await recieve_text()
                         if text not in possible_paylods:
                             raise MyException(
-                                'Please send a valid response. Start OVER!')
+                                'Please send a valid response. Start Over!')
                         if text == "view_balance":
                             balance = account.viewBalance()
                             await websocket.send_json(balance.content)
@@ -77,12 +81,16 @@ async def websocket_endpoint(websocket: WebSocket):
                             account.selfRecharge(pin)
                             await websocket.send_text("Successful")
                             await after_login()
+
                     print('Before Login')
                     await after_login()
+
                 else:
                     raise MyException('Wrong Token. Start Over!!!')
+
             else:
-                raise MyException('Please Enter a Valid Number')
+                raise MyException('Please Enter a Valid Number. This one seems wrong')
+
         except Exception as e:
             print('error: ', e)
             await websocket.send_text(str(e))
