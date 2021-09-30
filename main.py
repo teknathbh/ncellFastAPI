@@ -55,7 +55,7 @@ async def websocket_endpoint(websocket: WebSocket):
                                 account.sendSms(number, msg)
                             await websocket.send_text('Sent Message Successfully')
                         except:
-                            raise MyException('Invalid Response')
+                            raise MyException('Invalid Response. Please start over')
 
                     async def after_login():
                         print('After Login')
@@ -65,7 +65,7 @@ async def websocket_endpoint(websocket: WebSocket):
                         text = await recieve_text()
                         if text not in possible_paylods:
                             raise MyException(
-                                'Please send a valid response. Start OVER!')
+                                'Please send a valid response. Start Over!')
                         if text == "view_balance":
                             balance = account.viewBalance()
                             await websocket.send_json(balance.content)
@@ -89,7 +89,7 @@ async def websocket_endpoint(websocket: WebSocket):
                     raise MyException('Wrong Token. Start Over!!!')
 
             else:
-                raise MyException('Please Enter a Valid Number')
+                raise MyException('Please Enter a Valid Number. This one seems wrong')
 
         except Exception as e:
             print('error: ', e)
