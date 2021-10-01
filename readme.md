@@ -14,7 +14,7 @@ Ncellapp module by <a href="https://github.com/hemantapkh">@hemantapkh</a>
 3. Send Free SMS(10 per day)
 4. Recharge
 
-### To Run:
+### To Run (You will need async server):
 
 1. Clone the repo
 2. Install dependencies with "pip install -r requirements.txt"
